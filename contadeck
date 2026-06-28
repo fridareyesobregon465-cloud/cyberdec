@@ -1,0 +1,66 @@
+<!-- Librería para generar el QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- Interfaz sencilla -->
+<div style="display: flex; flex-direction: column; align-items: center; gap: 15px; font-family: sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; width: fit-content; margin: 20px auto; background: #f9f9f9;">
+    <input type="text" id="qrText" placeholder="Escribe el texto aquí..." 
+           style="padding: 10px; width: 280px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;">
+    
+    <div id="qr" style="background: #fff; padding: 10px; border: 1px solid #eee; min-height: 256px; min-width: 256px; display: flex; align-items: center; justify-content: center;"></div>
+    
+    <button onclick="guardarQR()" 
+            style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        Descargar PNG
+    </button>
+</div>
+
+<script>
+    const qrText = document.getElementById("qrText");
+    const qrDiv = document.getElementById("qr");
+    let qrCode = null;
+
+    function generarQR() {
+        const text = qrText.value.trim() || "CYBERDECK";
+        
+        // Limpiar el contenedor antes de generar uno nuevo
+        qrDiv.innerHTML = "";
+        
+        qrCode = new QRCode(qrDiv, {
+            text: text,
+            width: 256,
+            height: 256,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+    function guardarQR() {
+        // La librería genera un canvas o una imagen según el navegador
+        const canvas = qrDiv.querySelector("canvas");
+        const img = qrDiv.querySelector("img");
+        let url = null;
+
+        if (canvas) {
+            url = canvas.toDataURL("image/png");
+        } else if (img && img.src.startsWith("data:")) {
+            url = img.src;
+        } else {
+            alert("Espera a que se genere el código.");
+            return;
+        }
+
+        const enlace = document.createElement("a");
+        enlace.href = url;
+        enlace.download = "codigo_qr.png";
+        enlace.click();
+    }
+
+    // Escuchar cambios en el input para actualizar el QR al instante
+    qrText.addEventListener("input", generarQR);
+
+    // Generar el primer QR por defecto
+    generarQR();
+</script>
+  
+  
